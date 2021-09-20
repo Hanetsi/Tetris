@@ -1,3 +1,4 @@
+"""Colors for other classes to use"""
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (127, 127, 127)
