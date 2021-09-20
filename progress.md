@@ -2,6 +2,10 @@
 
 -pygame window and inits DONE
 
--display backgrounds
+-display backgrounds DONE
 
--draw grid
+-draw grid DONE
+
+-create pieces
+
+-display pieces

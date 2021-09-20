@@ -8,12 +8,16 @@ from pygame.surface import SurfaceType
 from src.colors import *
 
 # GLOBAL CONSTANTS
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 1000
 PLAY_WIDTH = WINDOW_WIDTH / 2
 PLAY_HEIGHT = WINDOW_HEIGHT
+PLAY_LEFT = (WINDOW_WIDTH / 2) - (PLAY_WIDTH / 2)
 INFO_WIDTH = WINDOW_WIDTH / 4
 INFO_HEIGHT = WINDOW_HEIGHT
+INFO_LEFT = WINDOW_WIDTH - INFO_WIDTH
+
+BLOCK_SIZE = WINDOW_WIDTH / 20
 
 
 class Background:
@@ -31,18 +35,28 @@ class Background:
     def draw(self):
         self.screen.blit(self.bg, self.pos)
 
+    def drawGrid(self):
+        # Horizontal lines
+        size = float(BLOCK_SIZE)
+        for y in range(int(self.height / BLOCK_SIZE) + 1):
+            row = (y * size)
+            print(self.pos[0])
+            pygame.draw.line(self.screen, RED, (self.pos[0], row), (self.pos[0] + self.width, row), width=2)
+
+        for x in range(int(self.width / BLOCK_SIZE) + 1):
+            col = (x * size) + self.pos[0]
+            pygame.draw.line(self.screen, RED, (col, 0), (col, self.height), width=2)
+
 
 class Tetris:
     screen: Union[Surface, SurfaceType]
 
     def __init__(self):
+        self.initialise()
+
         self.backgrounds = self.make_backgrounds()
         self.pieces = []
         self.locked_positions = []
-
-        self.initialise()
-
-        self.backgrounds
 
     def initialise(self):
         pygame.init()
@@ -51,14 +65,15 @@ class Tetris:
 
     def make_backgrounds(self):
         bgs = [Background(self.screen, BLACK, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT),
-               Background(self.screen, WHITE, ((WINDOW_WIDTH / 2) - (PLAY_WIDTH / 2)), 0, PLAY_WIDTH, PLAY_HEIGHT),
-               Background(self.screen, GRAY, WINDOW_WIDTH - INFO_WIDTH, 0, INFO_WIDTH, INFO_HEIGHT)]
+               Background(self.screen, WHITE, PLAY_LEFT, 0, PLAY_WIDTH, PLAY_HEIGHT),
+               Background(self.screen, BLACK, INFO_LEFT, 0, INFO_WIDTH, INFO_HEIGHT)]
         return bgs
 
     def loop(self):
         while True:
             for bg in self.backgrounds:
                 bg.draw()
+            self.backgrounds[1].drawGrid()
             pygame.display.flip()
             for event in pygame.event.get():
                 if event.type == QUIT:
