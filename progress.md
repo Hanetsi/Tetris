@@ -6,6 +6,16 @@
 
 -draw grid DONE
 
--create pieces
+-switched approach to making pieces
 
--display pieces
+-create pieces DONE
+
+-display pieces DONE
+
+-piece movement DONE
+
+-clearing lines DONE
+
+-add scoring
+
+-add game ending
