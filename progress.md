@@ -2,10 +2,22 @@
 
 ## TODO:
 
-fix rotating placing blocks on top of each other
+### "ASAP":
 
-start screen
+
+
+### LATER:
+
+fix rotating placing blocks on top of each other, so add check and right to movements.
+
+fix bug with rotations displacing blocks by 1 to the left
+
+start screen, perhaps with usernames for hiscores??
 
 hiscores using sqlite3
 
 refactor a lot, eg. make texts their own class like background etc.
+
+make executable work and shareable
+
+text, grid classes?

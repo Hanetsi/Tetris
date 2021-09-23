@@ -1,17 +1,18 @@
-from typing import Union
 import random
 import pygame
-from pygame import Surface
 from pygame.locals import *
-from pygame.surface import SurfaceType
 
-from src.colors import *
-import src.pieces as pieces
+try:
+    from src.colors import *
+    import src.pieces as pieces
+except ModuleNotFoundError:
+    from colors import *
+    import pieces
 
-# GLOBAL CONSTANTS
-WINDOW_WIDTH = 800
+
+WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 1000
-PLAY_WIDTH = WINDOW_WIDTH / 2
+PLAY_WIDTH = 400
 PLAY_HEIGHT = PLAY_WIDTH * 2
 PLAY_TOP = WINDOW_HEIGHT - PLAY_HEIGHT
 PLAY_LEFT = (WINDOW_WIDTH / 2) - (PLAY_WIDTH / 2)
@@ -58,13 +59,17 @@ class Background:
         top = WINDOW_HEIGHT - PLAY_HEIGHT - (LINE_WIDTH / 2)
         bottom = WINDOW_HEIGHT
         for x in range(int(self.width / BLOCK_SIZE) + 1):
-            x_pos = x * float(BLOCK_SIZE) + self.pos[0] - (LINE_WIDTH / 2)# + (x * (LINE_WIDTH / 10))
+            x_pos = x * float(BLOCK_SIZE) + self.pos[0] - (LINE_WIDTH / 2)
             pygame.draw.line(self.screen, color, (x_pos, top), (x_pos, bottom), width=LINE_WIDTH)
 
 
-class Tetris:
-    screen: Union[Surface, SurfaceType]
+# TODO implement
+class Text:
+    def __init__(self):
+        pass
 
+
+class Tetris:
     def __init__(self):
         self.game_running = False
         self.initialise()
@@ -75,7 +80,7 @@ class Tetris:
         self.backgrounds = self.make_backgrounds()
         self.pieces = []
         self.score_for_cleared_lines = [40, 100, 300, 1200]
-        self.font = pygame.font.SysFont("Comic Sans MS", 30)
+        self.font = pygame.font.Font("tetris_block.ttf", 30)
         self.text_color = WHITE
 
         self.title_text = self.score_surface = self.font.render("TETRIS", False, WHITE)
@@ -157,8 +162,8 @@ class Tetris:
         for y, row in enumerate(self.next_piece_grid):
             for x, col in enumerate(row):
                 color = col
-                x_pos = (x * BLOCK_SIZE) + BLOCK_SIZE/2
-                y_pos = (y * BLOCK_SIZE) + BLOCK_SIZE/2
+                x_pos = (x * BLOCK_SIZE) + PLAY_LEFT / 4
+                y_pos = (y * BLOCK_SIZE) + PLAY_TOP
                 width = BLOCK_SIZE - LINE_WIDTH
                 height = BLOCK_SIZE - LINE_WIDTH
                 pygame.draw.rect(self.screen, color, (x_pos, y_pos, height, width))
@@ -240,13 +245,16 @@ class Tetris:
         self.backgrounds[1].draw_grid(self.line_color)
 
     def draw_title(self):
+        self.font.set_bold(True)
         self.screen.blit(self.title_text, (self.title_text_x, self.title_text_y))
+        self.font.set_bold(False)
 
     def draw_score(self):
         """Draws score on screen. Gets size again to count for different lengths of scores."""
         score_width = self.score_surface.get_size()[0]
         score_left = WINDOW_WIDTH - (INFO_WIDTH / 2) - (score_width / 2)
-        self.screen.blit(self.score_surface, (score_left, score_width))
+        score_top = PLAY_TOP
+        self.screen.blit(self.score_surface, (score_left, score_top))
 
     def handle_events(self) -> bool:
         """Returns a bool. True if should quit"""

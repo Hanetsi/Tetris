@@ -1,5 +1,7 @@
-import random
-from src.colors import *
+try:
+    from src.colors import *
+except ModuleNotFoundError:
+    from colors import *
 
 
 class Piece:
