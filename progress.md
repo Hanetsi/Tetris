@@ -1,21 +1,11 @@
 # TETRIS project
 
--pygame window and inits DONE
+## TODO:
 
--display backgrounds DONE
+fix rotating placing blocks on top of each other
 
--draw grid DONE
+start screen
 
--switched approach to making pieces
+hiscores using sqlite3
 
--create pieces DONE
-
--display pieces DONE
-
--piece movement DONE
-
--clearing lines DONE
-
--add scoring
-
--add game ending
+refactor a lot, eg. make texts their own class like background etc.

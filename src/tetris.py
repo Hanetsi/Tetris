@@ -21,7 +21,7 @@ INFO_LEFT = WINDOW_WIDTH - INFO_WIDTH
 
 BLOCK_SIZE = PLAY_WIDTH / 10
 LINE_WIDTH = 2
-FALL_TIME = 250
+FALL_TIME = 500
 
 
 class Background:
@@ -66,6 +66,7 @@ class Tetris:
     screen: Union[Surface, SurfaceType]
 
     def __init__(self):
+        self.game_running = False
         self.initialise()
         self.play_bg_color = DARK_GRAY
         self.bg_color = BLACK
@@ -73,16 +74,26 @@ class Tetris:
         self.line_color = GRAY
         self.backgrounds = self.make_backgrounds()
         self.pieces = []
+        self.score_for_cleared_lines = [40, 100, 300, 1200]
+        self.font = pygame.font.SysFont("Comic Sans MS", 30)
+        self.text_color = WHITE
 
-        self.piece = self.new_piece()
-        self.grid = self.empty_grid()
-        self.locked_positions = self.empty_grid()
+        self.title_text = self.score_surface = self.font.render("TETRIS", False, WHITE)
+        self.title_text_x = (PLAY_LEFT + PLAY_WIDTH/2) - (self.title_text.get_size()[0] / 2)
+        self.title_text_y = self.title_text.get_size()[1]/2
+
+        self.game_over_text = self.score_surface = self.font.render("GAME OVER", False, WHITE)
+        self.game_over_text_x = (PLAY_LEFT + PLAY_WIDTH/2) - (self.game_over_text.get_size()[0] / 2)
+        self.game_over_text_y = PLAY_TOP - self.game_over_text.get_size()[1]
+
+        self.reset()
 
         self.clock = pygame.time.Clock()
 
 
     def initialise(self):
         pygame.init()
+        pygame.font.init()
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Tetris")
 
@@ -110,6 +121,17 @@ class Tetris:
                 else:
                     self.grid[x][y] = self.play_bg_color
 
+    def reset(self):
+        self.score = 0
+        self.score_surface = self.font.render("Score: " + str(self.score), False, WHITE)
+
+        self.next_piece = self.new_piece()
+        self.piece = self.get_next_piece()
+        self.grid = self.empty_grid()
+        self.next_piece_grid = [[self.bg_color for _ in range(5)] for _ in range(5)]
+        self.locked_positions = self.empty_grid()
+
+        self.game_running = True
 
     def draw_blocks(self):
         for y, row in enumerate(self.grid):
@@ -126,12 +148,36 @@ class Tetris:
         for position in piece.block_positions:
             grid[piece.y + position[1]][piece.x + position[0]] = piece.color
 
+    def display_next_piece(self):
+        self.next_piece_grid = [[self.bg_color for _ in range(5)] for _ in range(5)]
+        for position in self.next_piece.block_positions:
+            self.next_piece_grid[position[0]][position[1]] = self.next_piece.color
+
+    def draw_next_piece(self):
+        for y, row in enumerate(self.next_piece_grid):
+            for x, col in enumerate(row):
+                color = col
+                x_pos = (x * BLOCK_SIZE) + BLOCK_SIZE/2
+                y_pos = (y * BLOCK_SIZE) + BLOCK_SIZE/2
+                width = BLOCK_SIZE - LINE_WIDTH
+                height = BLOCK_SIZE - LINE_WIDTH
+                pygame.draw.rect(self.screen, color, (x_pos, y_pos, height, width))
+
     def new_piece(self):
         return random.choice(pieces.piece_types)()
+
+    def get_next_piece(self):
+        piece = self.next_piece
+        self.next_piece = self.new_piece()
+        return piece
 
     def lock_piece(self, piece):
         for position in piece.block_positions:
             self.locked_positions[piece.y + position[1]][piece.x + position[0]] = piece.color
+
+    def game_over(self):
+        self.game_running = False
+        self.screen.blit(self.game_over_text, (self.game_over_text_x, self.game_over_text_y))
 
     def check_down(self, grid, piece):
         for position in piece.block_positions:
@@ -144,6 +190,8 @@ class Tetris:
             if color_below != self.play_bg_color:
                 color_in_locked_pos = self.locked_positions[row + 1][col]
                 if color_in_locked_pos != self.play_bg_color:
+                    if piece.y == 0:
+                        self.game_over()
                     return False
         return True
 
@@ -152,21 +200,27 @@ class Tetris:
         is_valid = True
         for position in piece.block_positions:
             col = piece.x + position[0]
-            print(col, (len(grid[0]) - 1))
             if col >= (len(grid[0]) - 1):
                 is_valid = False
         return is_valid
 
     def check_lines(self):
         """Check if all elements in a row are not background. If so clear the line"""
+        cleared = 0
         for i, row in enumerate(self.locked_positions):
             filled = 0
             for color in row:
                 if color != self.play_bg_color:
                     filled += 1
             if filled == len(row):
-                print("clearing lines", i)
+                cleared += 1
                 self.clear_line(i)
+        if not cleared:
+            return
+        self.score += self.score_for_cleared_lines[cleared - 1]
+        global FALL_TIME
+        FALL_TIME -= (cleared * 10)
+        self.score_surface = self.font.render("Score: " + str(self.score), False, WHITE)
 
     def clear_line(self, row_n):
         """Clears the given line and shuffles all remaining lines down 1 step.
@@ -179,7 +233,20 @@ class Tetris:
     def draw_backgrounds(self):
         for bg in self.backgrounds:
             bg.draw()
+        self.display_next_piece()
+        self.draw_next_piece()
+        self.draw_score()
+        self.draw_title()
         self.backgrounds[1].draw_grid(self.line_color)
+
+    def draw_title(self):
+        self.screen.blit(self.title_text, (self.title_text_x, self.title_text_y))
+
+    def draw_score(self):
+        """Draws score on screen. Gets size again to count for different lengths of scores."""
+        score_width = self.score_surface.get_size()[0]
+        score_left = WINDOW_WIDTH - (INFO_WIDTH / 2) - (score_width / 2)
+        self.screen.blit(self.score_surface, (score_left, score_width))
 
     def handle_events(self) -> bool:
         """Returns a bool. True if should quit"""
@@ -193,15 +260,19 @@ class Tetris:
                     self.piece.move_right()
                 if event.key == K_w:
                     self.piece.rotate()
+                    while not self.check_right(self.grid, self.piece):
+                        self.piece.x -= 1
                 if event.key == K_s:
                     while self.check_down(self.grid, self.piece):
                         self.piece.move_down()
                     else:
                         self.lock_piece(self.piece)
-                        self.piece = self.new_piece()
+                        self.piece = self.get_next_piece()
+                if event.key == K_r:
+                    self.reset()
         return False
 
-    def movement(self, time):
+    def fall(self, time):
         time += self.clock.tick()
         if time > FALL_TIME:
             if self.check_down(self.grid, self.piece):
@@ -209,22 +280,23 @@ class Tetris:
                 time = 0
             else:
                 self.lock_piece(self.piece)
-                self.piece = self.new_piece()
+                self.piece = self.get_next_piece()
         return time
 
     def loop(self):
         time = 0
         while True:
-            self.draw_backgrounds()
+            if self.game_running:
+                self.draw_backgrounds()
             if self.handle_events():
                 return
 
-            time = self.movement(time)
-
-            self.clean_grid()
-            self.display_piece(self.grid, self.piece)
-            self.check_lines()
-            self.draw_blocks()
+            if self.game_running:
+                time = self.fall(time)
+                self.clean_grid()
+                self.display_piece(self.grid, self.piece)
+                self.check_lines()
+                self.draw_blocks()
 
             pygame.display.flip()
 

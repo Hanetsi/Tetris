@@ -17,7 +17,6 @@ class Piece:
         self.x = 5
         self.y = 0
         self.rotation = 0
-        self.color = random.choice(self.shapes_colors)
 
     def rotate(self):
         """Each piece implements their own version."""
@@ -40,6 +39,7 @@ class Piece:
 class iPiece(Piece):
     def __init__(self):
         super().__init__()
+        self.color = CYAN
         self.shape = [
             [(0, 0), (0, 1), (0, 2), (0, 3)],
             [(0, 0), (1, 0), (2, 0), (3, 0)]
@@ -57,6 +57,7 @@ class iPiece(Piece):
 class oPiece(Piece):
     def __init__(self):
         super().__init__()
+        self.color = YELLOW
         self.shape = [
             [(0, 0), (0, 1), (1, 0), (1, 1)]
         ]
@@ -66,6 +67,7 @@ class oPiece(Piece):
 class tPiece(Piece):
     def __init__(self):
         super().__init__()
+        self.color = MAGENTA
         self.shape = [
             [(0, 0), (0, 1), (0, 2), (1, 1)],
             [(0, 0), (1, 0), (2, 0), (1, 1)],
@@ -85,6 +87,7 @@ class tPiece(Piece):
 class sPiece(Piece):
     def __init__(self):
         super().__init__()
+        self.color = GREEN
         self.shape = [
             [(0, 1), (0, 2), (1, 0), (1, 1)],
             [(0, 0), (1, 0), (1, 1), (2, 1)]
@@ -102,6 +105,7 @@ class sPiece(Piece):
 class zPiece(Piece):
     def __init__(self):
         super().__init__()
+        self.color = RED
         self.shape = [
             [(0, 0), (0, 1), (1, 1), (1, 2)],
             [(0, 1), (1, 0), (1, 1), (2, 0)]
@@ -119,6 +123,7 @@ class zPiece(Piece):
 class lPiece(Piece):
     def __init__(self):
         super().__init__()
+        self.color = ORANGE
         self.shape = [
             [(0, 0), (1, 0), (2, 0), (2, 1)],
             [(0, 0), (0, 1), (0, 2), (1, 0)],
@@ -138,6 +143,7 @@ class lPiece(Piece):
 class jPiece(Piece):
     def __init__(self):
         super().__init__()
+        self.color = BLUE
         self.shape = [
             [(0, 1), (1, 1), (2, 1), (2, 0)],
             [(0, 0), (0, 1), (0, 2), (1, 2)],
