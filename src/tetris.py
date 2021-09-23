@@ -9,7 +9,6 @@ except ModuleNotFoundError:
     from colors import *
     import pieces
 
-
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 1000
 PLAY_WIDTH = 400
@@ -47,7 +46,7 @@ class Background:
         self.draw_vertical_lines(color)
 
     def draw_horizontal_lines(self, color: tuple) -> None:
-        """Draws the lines from the bottom up."""
+        """Draws the horizontal lines from the bottom up."""
         left = self.pos[0] - (LINE_WIDTH / 2)
         right = left + self.width
         for y in range(int(self.height / BLOCK_SIZE) + 1):
@@ -55,7 +54,7 @@ class Background:
             pygame.draw.line(self.screen, color, (left, row), (right, row), width=LINE_WIDTH)
 
     def draw_vertical_lines(self, color: tuple) -> None:
-        """Draws the lines from the bottom up."""
+        """Draws the vertical lines from the bottom up."""
         top = WINDOW_HEIGHT - PLAY_HEIGHT - (LINE_WIDTH / 2)
         bottom = WINDOW_HEIGHT
         for x in range(int(self.width / BLOCK_SIZE) + 1):
@@ -69,6 +68,13 @@ class Text:
         pass
 
 
+# TODO implement?
+class Grid:
+    def __init__(self):
+        pass
+
+
+# TODO clean up init, some comes with text class
 class Tetris:
     def __init__(self):
         self.game_running = False
@@ -95,30 +101,34 @@ class Tetris:
 
         self.clock = pygame.time.Clock()
 
-
     def initialise(self):
+        """Initial state of the game and pygame inits."""
         pygame.init()
         pygame.font.init()
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Tetris")
 
     def make_backgrounds(self):
+        """Creates all the backgrounds."""
         bgs = [Background(self.screen, self.bg_color, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT),
                Background(self.screen, self.play_bg_color, PLAY_LEFT, PLAY_TOP, PLAY_WIDTH, PLAY_HEIGHT),
                Background(self.screen, self.info_bg_color, INFO_LEFT, 0, INFO_WIDTH, INFO_HEIGHT)]
         return bgs
 
     def empty_grid(self):
+        """Returns a grid full of play areas background color."""
         rows = int(PLAY_HEIGHT / BLOCK_SIZE)
         cols = int(PLAY_WIDTH / BLOCK_SIZE)
 
         return [[self.play_bg_color for _ in range(cols)] for _ in range(rows)]
 
     def empty_line(self):
+        """Returns a line filled with play areas background color."""
         cols = int(PLAY_WIDTH / BLOCK_SIZE)
         return [self.play_bg_color for _ in range(cols)]
 
     def clean_grid(self):
+        """Removes all non-locked positions from grid. Make sure current piece is locked before calling."""
         for x, row in enumerate(self.locked_positions):
             for y, color in enumerate(row):
                 if color != self.play_bg_color:
@@ -127,18 +137,18 @@ class Tetris:
                     self.grid[x][y] = self.play_bg_color
 
     def reset(self):
+        """Resets game state."""
         self.score = 0
         self.score_surface = self.font.render("Score: " + str(self.score), False, WHITE)
-
         self.next_piece = self.new_piece()
         self.piece = self.get_next_piece()
         self.grid = self.empty_grid()
         self.next_piece_grid = [[self.bg_color for _ in range(5)] for _ in range(5)]
         self.locked_positions = self.empty_grid()
-
         self.game_running = True
 
     def draw_blocks(self):
+        """Draws all the blocks in grid. Accounts for line widths etc."""
         for y, row in enumerate(self.grid):
             for x, col in enumerate(row):
                 color = col
@@ -149,16 +159,18 @@ class Tetris:
                 pygame.draw.rect(self.screen, color, (x_pos, y_pos, height, width))
 
     def display_piece(self, grid, piece):
-        """Insert copies a pieces color into grid according to shape of piece."""
+        """Copies pieces color into grid according to shape of piece."""
         for position in piece.block_positions:
             grid[piece.y + position[1]][piece.x + position[0]] = piece.color
 
     def display_next_piece(self):
+        """Places next piece on to it's grid"""
         self.next_piece_grid = [[self.bg_color for _ in range(5)] for _ in range(5)]
         for position in self.next_piece.block_positions:
             self.next_piece_grid[position[0]][position[1]] = self.next_piece.color
 
     def draw_next_piece(self):
+        """Draws next piece in the up left corner."""
         for y, row in enumerate(self.next_piece_grid):
             for x, col in enumerate(row):
                 color = col
@@ -172,11 +184,13 @@ class Tetris:
         return random.choice(pieces.piece_types)()
 
     def get_next_piece(self):
+        """Returns the next piece and gets a random in queue."""
         piece = self.next_piece
         self.next_piece = self.new_piece()
         return piece
 
     def lock_piece(self, piece):
+        """Copies a pieces block positions into locked positions."""
         for position in piece.block_positions:
             self.locked_positions[piece.y + position[1]][piece.x + position[0]] = piece.color
 
@@ -185,6 +199,7 @@ class Tetris:
         self.screen.blit(self.game_over_text, (self.game_over_text_x, self.game_over_text_y))
 
     def check_down(self, grid, piece):
+        """Return true if piece can move down"""
         for position in piece.block_positions:
             row = piece.y + position[1]
             col = piece.x + position[0]
@@ -201,7 +216,7 @@ class Tetris:
         return True
 
     def check_right(self, grid, piece):
-        """Checks if piece hasd space to move right"""
+        """Return true if piece can move right."""
         is_valid = True
         for position in piece.block_positions:
             col = piece.x + position[0]
@@ -236,6 +251,7 @@ class Tetris:
         self.locked_positions[0] = self.empty_line()
 
     def draw_backgrounds(self):
+        """Draws all the backgrounds."""
         for bg in self.backgrounds:
             bg.draw()
         self.display_next_piece()
@@ -281,6 +297,7 @@ class Tetris:
         return False
 
     def fall(self, time):
+        """Piece will fall if enough time has passed."""
         time += self.clock.tick()
         if time > FALL_TIME:
             if self.check_down(self.grid, self.piece):
@@ -292,6 +309,7 @@ class Tetris:
         return time
 
     def loop(self):
+        """Game loop."""
         time = 0
         while True:
             if self.game_running:
