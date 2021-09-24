@@ -25,8 +25,7 @@ class Game:
             "volume": VOLUME
         }
 
-        self.config = self.load_config()
-        print(self.config)
+        self.load_config()
         self.initialize()
         self.loop()
 
