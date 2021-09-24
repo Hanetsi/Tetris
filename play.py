@@ -1,8 +1,10 @@
 import src.game as game
+import os
 
 
 def main():
-    game.Game()
+    path = os.getcwd()
+    game.Game(path)
 
 
 if __name__ == "__main__":
