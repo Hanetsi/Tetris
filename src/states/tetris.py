@@ -73,7 +73,7 @@ class Background:
 # TODO implement
 class Text:
     pygame.font.init()
-    font = pygame.font.Font("tetris_block.ttf", 30)
+    font = pygame.font.Font("../tetris_block.ttf", 30)
 
     def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
         self.screen = screen
@@ -128,7 +128,6 @@ class Tetris:
 
         self.backgrounds = self.make_backgrounds()
         self.pieces = []
-        self.font = pygame.font.Font("tetris_block.ttf", 30)
         self.text_color = WHITE
 
         self.texts = self.make_texts()

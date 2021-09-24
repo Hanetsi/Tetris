@@ -4,7 +4,9 @@
 
 ### "ASAP":
 
+improve program structure
 
+refactor a lot
 
 ### LATER:
 
@@ -14,8 +16,6 @@ start screen, perhaps with usernames for hiscores??
 
 hiscores using sqlite3
 
-refactor a lot
-
 grid class?
 
 make dynamic window size make sense
@@ -23,7 +23,5 @@ make dynamic window size make sense
 music
 
 sounds
-
-improve program structure
 
 config file
