@@ -21,3 +21,9 @@ refactor a lot, eg. make texts their own class like background etc.
 make executable work and shareable
 
 text, grid classes?
+
+make dynamic window size make sense
+
+music
+
+sounds

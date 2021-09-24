@@ -9,9 +9,9 @@ except ModuleNotFoundError:
     from colors import *
     import pieces
 
-WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 1000
-PLAY_WIDTH = 400
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 800
+PLAY_WIDTH = 300
 PLAY_HEIGHT = PLAY_WIDTH * 2
 PLAY_TOP = WINDOW_HEIGHT - PLAY_HEIGHT
 PLAY_LEFT = (WINDOW_WIDTH / 2) - (PLAY_WIDTH / 2)
@@ -64,8 +64,40 @@ class Background:
 
 # TODO implement
 class Text:
-    def __init__(self):
-        pass
+    pygame.font.init()
+    font = pygame.font.Font("tetris_block.ttf", 30)
+
+    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
+        self.screen = screen
+        self.text = text
+        self.color = color
+        self.topleft = topleft
+        self.downright = downright
+        # Initial value for x and y
+        self.x, y = self.topleft[0], self.topleft[1]
+        self.surface = self.font.render(text, False, WHITE)
+        self.center()
+
+    def draw(self):
+        """Draws the text onto screen."""
+        self.screen.blit(self.surface, (self.x, self.y))
+
+    def center(self):
+        """Center the text into the are given for it."""
+        width, height = self.surface.get_size()
+        self.x = self.topleft[0] + (self.downright[0] - self.topleft[0]) / 2 - width / 2
+        self.y = self.topleft[1] + (self.downright[1] - self.topleft[1]) / 2 - height / 2
+
+
+class Score(Text):
+    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
+        super().__init__(screen, text, color, topleft, downright)
+
+    def draw(self, score):
+        """Override the draw method to allow displaying different scores."""
+        self.surface = self.font.render(str(score), False, WHITE)
+        self.center()
+        self.screen.blit(self.surface, (self.x, self.y))
 
 
 # TODO implement?
@@ -76,26 +108,23 @@ class Grid:
 
 # TODO clean up init, some comes with text class
 class Tetris:
+    score_for_cleared_lines = [40, 100, 300, 1200]
+
     def __init__(self):
         self.game_running = False
-        self.initialise()
+        self.screen = self.initialise()
         self.play_bg_color = DARK_GRAY
         self.bg_color = BLACK
         self.info_bg_color = BLACK
         self.line_color = GRAY
         self.backgrounds = self.make_backgrounds()
         self.pieces = []
-        self.score_for_cleared_lines = [40, 100, 300, 1200]
         self.font = pygame.font.Font("tetris_block.ttf", 30)
         self.text_color = WHITE
 
-        self.title_text = self.score_surface = self.font.render("TETRIS", False, WHITE)
-        self.title_text_x = (PLAY_LEFT + PLAY_WIDTH/2) - (self.title_text.get_size()[0] / 2)
-        self.title_text_y = self.title_text.get_size()[1]/2
-
-        self.game_over_text = self.score_surface = self.font.render("GAME OVER", False, WHITE)
-        self.game_over_text_x = (PLAY_LEFT + PLAY_WIDTH/2) - (self.game_over_text.get_size()[0] / 2)
-        self.game_over_text_y = PLAY_TOP - self.game_over_text.get_size()[1]
+        self.texts = self.make_texts()
+        self.game_over_text = Text(self.screen, "GAME OVER", self.text_color, (PLAY_LEFT, PLAY_TOP-100), (INFO_LEFT, PLAY_TOP))
+        self.score_text = Score(self.screen, "0", self.text_color, (INFO_LEFT, PLAY_TOP + 100), (WINDOW_WIDTH, PLAY_TOP + 200))
 
         self.reset()
 
@@ -104,9 +133,9 @@ class Tetris:
     def initialise(self):
         """Initial state of the game and pygame inits."""
         pygame.init()
-        pygame.font.init()
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Tetris")
+        return screen
 
     def make_backgrounds(self):
         """Creates all the backgrounds."""
@@ -114,6 +143,14 @@ class Tetris:
                Background(self.screen, self.play_bg_color, PLAY_LEFT, PLAY_TOP, PLAY_WIDTH, PLAY_HEIGHT),
                Background(self.screen, self.info_bg_color, INFO_LEFT, 0, INFO_WIDTH, INFO_HEIGHT)]
         return bgs
+
+    def make_texts(self):
+        """Creates all text objects. Maybe change to dict later ?"""
+        texts = [
+            Text(self.screen, "TETRIS", self.text_color, (PLAY_LEFT, 0), (PLAY_LEFT + PLAY_WIDTH, PLAY_TOP)),
+            Text(self.screen, "Score", self.text_color, (INFO_LEFT, PLAY_TOP), (WINDOW_WIDTH, PLAY_TOP + 100)),
+        ]
+        return texts
 
     def empty_grid(self):
         """Returns a grid full of play areas background color."""
@@ -139,7 +176,6 @@ class Tetris:
     def reset(self):
         """Resets game state."""
         self.score = 0
-        self.score_surface = self.font.render("Score: " + str(self.score), False, WHITE)
         self.next_piece = self.new_piece()
         self.piece = self.get_next_piece()
         self.grid = self.empty_grid()
@@ -196,7 +232,7 @@ class Tetris:
 
     def game_over(self):
         self.game_running = False
-        self.screen.blit(self.game_over_text, (self.game_over_text_x, self.game_over_text_y))
+        self.game_over_text.draw()
 
     def check_down(self, grid, piece):
         """Return true if piece can move down"""
@@ -206,7 +242,6 @@ class Tetris:
             if row >= (len(grid) - 1):
                 return False
             color_below = grid[row + 1][col]
-
             if color_below != self.play_bg_color:
                 color_in_locked_pos = self.locked_positions[row + 1][col]
                 if color_in_locked_pos != self.play_bg_color:
@@ -217,12 +252,30 @@ class Tetris:
 
     def check_right(self, grid, piece):
         """Return true if piece can move right."""
-        is_valid = True
         for position in piece.block_positions:
+            row = piece.y + position[1]
             col = piece.x + position[0]
             if col >= (len(grid[0]) - 1):
-                is_valid = False
-        return is_valid
+                return False
+            color_right = grid[row][col + 1]
+            if color_right != self.play_bg_color:
+                color_in_locked_pos = self.locked_positions[row][col + 1]
+                if color_in_locked_pos != self.play_bg_color:
+                    return False
+        return True
+
+    def check_left(self, grid, piece):
+        for position in piece.block_positions:
+            row = piece.y + position[1]
+            col = piece.x + position[0]
+            if col == 0:
+                return False
+            color_right = grid[row][col - 1]
+            if color_right != self.play_bg_color:
+                color_in_locked_pos = self.locked_positions[row][col - 1]
+                if color_in_locked_pos != self.play_bg_color:
+                    return False
+        return True
 
     def check_lines(self):
         """Check if all elements in a row are not background. If so clear the line"""
@@ -240,7 +293,6 @@ class Tetris:
         self.score += self.score_for_cleared_lines[cleared - 1]
         global FALL_TIME
         FALL_TIME -= (cleared * 10)
-        self.score_surface = self.font.render("Score: " + str(self.score), False, WHITE)
 
     def clear_line(self, row_n):
         """Clears the given line and shuffles all remaining lines down 1 step.
@@ -256,21 +308,12 @@ class Tetris:
             bg.draw()
         self.display_next_piece()
         self.draw_next_piece()
-        self.draw_score()
-        self.draw_title()
         self.backgrounds[1].draw_grid(self.line_color)
 
-    def draw_title(self):
-        self.font.set_bold(True)
-        self.screen.blit(self.title_text, (self.title_text_x, self.title_text_y))
-        self.font.set_bold(False)
-
-    def draw_score(self):
-        """Draws score on screen. Gets size again to count for different lengths of scores."""
-        score_width = self.score_surface.get_size()[0]
-        score_left = WINDOW_WIDTH - (INFO_WIDTH / 2) - (score_width / 2)
-        score_top = PLAY_TOP
-        self.screen.blit(self.score_surface, (score_left, score_top))
+    def draw_texts(self):
+        for text in self.texts:
+            text.draw()
+        self.score_text.draw(self.score)
 
     def handle_events(self) -> bool:
         """Returns a bool. True if should quit"""
@@ -278,7 +321,7 @@ class Tetris:
             if event.type == QUIT:
                 return True
             if event.type == KEYDOWN:
-                if event.key == K_a and 0 < self.piece.x:
+                if event.key == K_a and self.check_left(self.grid, self.piece):
                     self.piece.move_left()
                 if event.key == K_d and self.check_right(self.grid, self.piece):
                     self.piece.move_right()
@@ -314,6 +357,7 @@ class Tetris:
         while True:
             if self.game_running:
                 self.draw_backgrounds()
+                self.draw_texts()
             if self.handle_events():
                 return
 
