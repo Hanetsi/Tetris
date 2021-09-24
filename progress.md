@@ -8,8 +8,6 @@
 
 ### LATER:
 
-fix rotating placing blocks on top of each other, so add check and right to movements.
-
 fix bug with rotations displacing blocks by 1 to the left
 
 start screen, perhaps with usernames for hiscores??
@@ -27,3 +25,7 @@ make dynamic window size make sense
 music
 
 sounds
+
+improve program structure
+
+config file

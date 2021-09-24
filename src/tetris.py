@@ -1,6 +1,7 @@
 import random
 import pygame
 from pygame.locals import *
+from enum import Enum, auto
 
 try:
     from src.colors import *
@@ -22,6 +23,13 @@ INFO_LEFT = WINDOW_WIDTH - INFO_WIDTH
 BLOCK_SIZE = PLAY_WIDTH / 10
 LINE_WIDTH = 2
 FALL_TIME = 500
+
+
+class GameState(Enum):
+    SPLASH = auto()
+    SETTINGS = auto()
+    PLAYING = auto()
+    GAMEOVER = auto()
 
 
 class Background:
@@ -127,6 +135,8 @@ class Tetris:
         self.score_text = Score(self.screen, "0", self.text_color, (INFO_LEFT, PLAY_TOP + 100), (WINDOW_WIDTH, PLAY_TOP + 200))
 
         self.reset()
+
+        self.state = GameState.PLAYING
 
         self.clock = pygame.time.Clock()
 
@@ -321,22 +331,23 @@ class Tetris:
             if event.type == QUIT:
                 return True
             if event.type == KEYDOWN:
-                if event.key == K_a and self.check_left(self.grid, self.piece):
-                    self.piece.move_left()
-                if event.key == K_d and self.check_right(self.grid, self.piece):
-                    self.piece.move_right()
-                if event.key == K_w:
-                    self.piece.rotate()
-                    while not self.check_right(self.grid, self.piece):
-                        self.piece.x -= 1
-                if event.key == K_s:
-                    while self.check_down(self.grid, self.piece):
-                        self.piece.move_down()
-                    else:
-                        self.lock_piece(self.piece)
-                        self.piece = self.get_next_piece()
-                if event.key == K_r:
-                    self.reset()
+                if self.state == GameState.PLAYING:
+                    if event.key == K_a and self.check_left(self.grid, self.piece):
+                        self.piece.move_left()
+                    if event.key == K_d and self.check_right(self.grid, self.piece):
+                        self.piece.move_right()
+                    if event.key == K_w:
+                        self.piece.rotate()
+                        while not self.check_right(self.grid, self.piece):
+                            self.piece.x -= 1
+                    if event.key == K_s:
+                        while self.check_down(self.grid, self.piece):
+                            self.piece.move_down()
+                        else:
+                            self.lock_piece(self.piece)
+                            self.piece = self.get_next_piece()
+                    if event.key == K_r:
+                        self.reset()
         return False
 
     def fall(self, time):
