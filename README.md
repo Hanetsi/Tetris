@@ -14,11 +14,9 @@ start screen, perhaps with usernames for hiscores??
 
 hiscores using sqlite3
 
-refactor a lot, eg. make texts their own class like background etc.
+refactor a lot
 
-make executable work and shareable
-
-text, grid classes?
+grid class?
 
 make dynamic window size make sense
 
