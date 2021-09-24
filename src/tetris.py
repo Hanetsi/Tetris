@@ -117,14 +117,15 @@ class Grid:
 # TODO clean up init, some comes with text class
 class Tetris:
     score_for_cleared_lines = [40, 100, 300, 1200]
+    play_bg_color = DARK_GRAY
+    bg_color = BLACK
+    info_bg_color = BLACK
+    line_color = GRAY
 
     def __init__(self):
         self.game_running = False
         self.screen = self.initialise()
-        self.play_bg_color = DARK_GRAY
-        self.bg_color = BLACK
-        self.info_bg_color = BLACK
-        self.line_color = GRAY
+
         self.backgrounds = self.make_backgrounds()
         self.pieces = []
         self.font = pygame.font.Font("tetris_block.ttf", 30)
