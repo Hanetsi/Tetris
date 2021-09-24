@@ -1,5 +1,6 @@
 import pygame
-from enum import Enum, auto
+from src.states import splash, tetris, settings, gameover
+from src.gamestate import GameState
 
 pygame.init()
 
@@ -9,14 +10,8 @@ HEIGHT = 1000
 VOLUME = 100
 
 
-class GameState(Enum):
-    SPLASH = auto()
-    SETTINGS = auto()
-    PLAYING = auto()
-    GAMEOVER = auto()
-
-
 class Game:
+    """Root class of the game."""
     def __init__(self, path):
         self.path = path
         self.config = {
@@ -24,15 +19,18 @@ class Game:
             "height": HEIGHT,
             "volume": VOLUME
         }
-
+        self.splash = splash.Splash()
+        self.settings = splash.Splash()
+        # self.tetris = tetris.Tetris()
+        self.gameover = gameover.Gameover()
         self.load_config()
         self.initialize()
-        self.loop()
+        self.game_loop()
 
     def initialize(self):
         self.screen = pygame.display.set_mode((self.config["width"], self.config["height"]))
         pygame.display.set_caption("Tetris")
-        self.running = True
+        self.state = GameState.SPLASH
 
     def load_config(self) -> bool:
         """Try to load settings from config file into config. If file is not found, make it with default values.
@@ -80,9 +78,21 @@ class Game:
             print(e)
             return False
 
-    def loop(self):
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    self.running = False
+    def game_loop(self):
+        running = True
+        while running:
+            if self.state == GameState.SPLASH:
+                self.splash = splash.Splash()
+                self.state = self.splash.loop()
+            elif self.state == GameState.SETTINGS:
+                self.settings = splash.Splash()
+                self.state = self.settings.loop()
+            elif self.state == GameState.TETRIS:
+                self.tetris = tetris.Tetris()
+                self.state = self.tetris.loop()
+            elif self.state == GameState.GAMEOVER:
+                self.gameover = gameover.Gameover()
+                self.state = self.gameover.loop()
+            elif self.state == 0:
+                pygame.quit()
+                running = False

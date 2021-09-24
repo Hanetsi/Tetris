@@ -4,6 +4,8 @@
 
 ### "ASAP":
 
+make game states a thing
+
 improve program structure
 
 refactor a lot
@@ -25,3 +27,5 @@ music
 sounds
 
 config file
+
+next piece rotation is wrong
