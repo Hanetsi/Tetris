@@ -15,6 +15,7 @@ class Game:
     def __init__(self, path):
         self.path = path
         self.config = {
+            "name": "hanezi",
             "resolution": (WIDTH, HEIGHT),
             "volume": VOLUME
         }
@@ -23,7 +24,7 @@ class Game:
         self.initialize()
 
         self.splash = splash.Splash(self.screen)
-        self.settings = settings.Settings(self.screen)
+        self.settings = settings.Settings(self.screen, self.config)
         self.tetris = tetris.Tetris(self.screen)
         self.gameover = gameover.Gameover(self.screen)
 
@@ -88,7 +89,7 @@ class Game:
                 self.splash = splash.Splash(self.screen)
                 self.state = self.splash.loop()
             elif self.state == GameState.SETTINGS:
-                self.settings = settings.Settings(self.screen)
+                self.settings = settings.Settings(self.screen, self.config)
                 self.state = self.settings.loop()
             elif self.state == GameState.TETRIS:
                 self.tetris = tetris.Tetris(self.screen)
@@ -96,6 +97,13 @@ class Game:
             elif self.state == GameState.GAMEOVER:
                 self.gameover = gameover.Gameover(self.screen)
                 self.state = self.gameover.loop()
+            elif self.state == GameState.RESTART:
+                restart(self.path)
             elif self.state == GameState.QUIT:
                 pygame.quit()
                 running = False
+
+
+def restart(path):
+    Game(path)
+

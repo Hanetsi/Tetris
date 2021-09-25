@@ -7,3 +7,4 @@ class GameState(Enum):
     TETRIS = auto()
     GAMEOVER = auto()
     QUIT = auto()
+    RESTART = auto()

@@ -95,7 +95,6 @@ class Tetris:
 
     def draw_texts(self):
         for text in self.static_texts:
-            print(text.text, text.topleft, text.downright)
             text.draw()
         self.score_text.draw(self.score)
 

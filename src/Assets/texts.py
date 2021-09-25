@@ -4,13 +4,12 @@ from src.Assets.colors import *
 
 class Text:
     pygame.font.init()
-    # font = pygame.font.Font("C:/Users/Eelis/OneDrive/Koulu/Python/Tetris/src/tetris_block.ttf", 30)
     font = pygame.font.SysFont("Monotxt", 50)
 
     def __init__(self, screen, text: str, color: tuple, size: int, topleft: tuple, downright: tuple):
         self.screen = screen
         self.size = size
-        self.text = text
+        self.text = "< " + text + " >"
         self.color = color
         self.topleft = topleft
         self.downright = downright
@@ -36,6 +35,25 @@ class Score(Text):
 
     def draw(self, score):
         """Override the draw method to allow displaying different scores."""
-        self.surface = self.font.render(str(score), False, WHITE)
+        self.surface = self.font.render(str(score), False, self.color)
         self.center()
         self.screen.blit(self.surface, (self.x, self.y))
+
+
+class Option(Text):
+    def __init__(self, screen, text: str, color: tuple, size: int, topleft: tuple, downright: tuple):
+        super().__init__(screen, text, color, size, topleft, downright)
+
+    def draw(self):
+        """Draws the text onto screen with normal color"""
+        self.surface = self.font.render(self.text, False, self.color)
+        self.screen.blit(self.surface, (self.x, self.y))
+
+    def draw_as_selected(self):
+        """Draws the text onto screen with inverted color"""
+        inverted_r, inverted_g, inverted_b = 255 - self.color[0], 255 - self.color[1], 255 - self.color[2]
+        self.surface = self.font.render(self.text, False, (inverted_r, inverted_g, inverted_b))
+        self.screen.blit(self.surface, (self.x, self.y))
+
+    def update_text(self, text: str):
+        self.text = "< " + text + " >"
