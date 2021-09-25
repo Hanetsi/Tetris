@@ -1,12 +1,12 @@
 import pygame
-from src.states import splash, tetris, settings, gameover
-from src.gamestate import GameState
+from src.states import splash, tetris, gameover
+from src.Assets.gamestate import GameState
 
 pygame.init()
 
 # DEFAULT CONFIG
-WIDTH = 1000
-HEIGHT = 1000
+WIDTH = 800
+HEIGHT = 800
 VOLUME = 100
 
 
@@ -15,20 +15,22 @@ class Game:
     def __init__(self, path):
         self.path = path
         self.config = {
-            "width": WIDTH,
-            "height": HEIGHT,
+            "resolution": (WIDTH, HEIGHT),
             "volume": VOLUME
         }
-        self.splash = splash.Splash()
-        self.settings = splash.Splash()
-        # self.tetris = tetris.Tetris()
-        self.gameover = gameover.Gameover()
+
         self.load_config()
         self.initialize()
+
+        self.splash = splash.Splash()
+        self.settings = splash.Splash()
+        self.tetris = tetris.Tetris(self.screen)
+        self.gameover = gameover.Gameover()
+
         self.game_loop()
 
     def initialize(self):
-        self.screen = pygame.display.set_mode((self.config["width"], self.config["height"]))
+        self.screen = pygame.display.set_mode(self.config['resolution'])
         pygame.display.set_caption("Tetris")
         self.state = GameState.SPLASH
 
@@ -42,24 +44,25 @@ class Game:
                 lines = [line.split("=") for line in lines]
                 lines = [[elem.strip("\n") for elem in line] for line in lines]
                 keys = [line[0] for line in lines]
-                values = [int(line[1]) for line in lines]
+                values = [int(line[1]) if line[0] != "resolution" else tuple[line[1]] for line in lines]
                 loaded = dict(zip(keys, values))
 
             for key in self.config.keys():
                 if key not in loaded.keys():
                     with open(path, "a") as f:
-                        line = key + "=" + str(self.config[key] + "\n")
+                        line = key + "=" + str(self.config[key]) + "\n"
                         f.write(line)
             return True
 
-        except FileNotFoundError:
+        except FileNotFoundError as e:
+            print("Error while loading config.", e)
             if self.write_config():
                 return True
             else:
                 return False
 
         except Exception as e:
-            print(e)
+            print("Error while loading config or creating config file", e)
             return False
 
     def write_config(self) -> bool:
@@ -88,7 +91,7 @@ class Game:
                 self.settings = splash.Splash()
                 self.state = self.settings.loop()
             elif self.state == GameState.TETRIS:
-                self.tetris = tetris.Tetris()
+                self.tetris = tetris.Tetris(self.screen)
                 self.state = self.tetris.loop()
             elif self.state == GameState.GAMEOVER:
                 self.gameover = gameover.Gameover()

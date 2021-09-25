@@ -1,6 +1,4 @@
 import pygame
-from pygame.locals import *
-from src.gamestate import GameState
 
 
 class Gameover:

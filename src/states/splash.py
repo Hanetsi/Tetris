@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from src.gamestate import GameState
+from src.Assets.gamestate import GameState
 
 
 class Splash:
