@@ -4,7 +4,7 @@
 
 ### "ASAP":
 
-refactor a lot
+make game over work again.
 
 ### LATER:
 
@@ -19,3 +19,5 @@ make dynamic window size make sense
 music
 
 sounds
+
+more refactoring?

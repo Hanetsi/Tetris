@@ -4,17 +4,19 @@ from src.Assets.colors import *
 
 class Text:
     pygame.font.init()
-    font = pygame.font.Font("C:/Users/Eelis/OneDrive/Koulu/Python/Tetris/src/tetris_block.ttf", 30)
+    # font = pygame.font.Font("C:/Users/Eelis/OneDrive/Koulu/Python/Tetris/src/tetris_block.ttf", 30)
+    font = pygame.font.SysFont("Monotxt", 50)
 
-    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
+    def __init__(self, screen, text: str, color: tuple, size: int, topleft: tuple, downright: tuple):
         self.screen = screen
+        self.size = size
         self.text = text
         self.color = color
         self.topleft = topleft
         self.downright = downright
         # Initial value for x and y
         self.x, y = self.topleft[0], self.topleft[1]
-        self.surface = self.font.render(text, False, WHITE)
+        self.surface = self.font.render(text, False, self.color)
         self.center()
 
     def draw(self):
@@ -29,8 +31,8 @@ class Text:
 
 
 class Score(Text):
-    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
-        super().__init__(screen, text, color, topleft, downright)
+    def __init__(self, screen, text: str, color: tuple, size: int, topleft: tuple, downright: tuple):
+        super().__init__(screen, text, color, size, topleft, downright)
 
     def draw(self, score):
         """Override the draw method to allow displaying different scores."""

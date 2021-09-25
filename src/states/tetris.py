@@ -58,17 +58,24 @@ class Tetris:
         self.grid.piece_to_grid()
         self.next_grid.piece_to_grid()
 
-        self.text_color = WHITE
+        self.text_color = PURPLE
+        self.text_size = self.width/10
         self.static_texts = [
-            Text(self.screen, "TETRIS", self.text_color, (self.dimensions["play_left"], 0),
-                 (self.dimensions["play_left"] + self.dimensions["play_width"], self.dimensions["play_top"])),
-            Text(self.screen, "Score", self.text_color, (self.dimensions["info_left"], self.dimensions["play_top"]),
-                 (self.width, self.dimensions["play_top"] + 100))
+            Text(self.screen, "TETRIS", self.text_color, self.text_size,
+                 (self.dimensions["play_left"], 0), (self.dimensions["play_left"] + self.dimensions["play_width"], self.dimensions["play_top"])),
+            Text(self.screen, "Score", self.text_color, self.text_size, (self.dimensions["info_left"], self.dimensions["play_top"]),
+                 (self.width, self.dimensions["play_top"] + 100)),
+            Text(self.screen, "MENU (ESC)", self.text_color, self.text_size,
+                 (0, self.width * 0.7),
+                 (self.dimensions["play_left"], self.height)),
+            Text(self.screen, "RESTART (R)", self.text_color, self.text_size,
+                 (self.dimensions["info_left"], self.width * 0.7),
+                 (self.width, self.height))
         ]
-        self.game_over_text = Text(self.screen, "GAME OVER", self.text_color,
+        self.game_over_text = Text(self.screen, "GAME OVER", self.text_color, self.text_size,
                                    (self.dimensions["play_left"], self.dimensions["play_top"] - 100),
                                    (self.dimensions["info_left"], self.dimensions["play_top"]))
-        self.score_text = Score(self.screen, "0", self.text_color,
+        self.score_text = Score(self.screen, "0", self.text_color, self.text_size,
                                 (self.dimensions["info_left"], self.dimensions["play_top"] + 100),
                                 (self.width, self.dimensions["play_top"] + 200))
 
@@ -88,6 +95,7 @@ class Tetris:
 
     def draw_texts(self):
         for text in self.static_texts:
+            print(text.text, text.topleft, text.downright)
             text.draw()
         self.score_text.draw(self.score)
 
@@ -120,6 +128,7 @@ class Tetris:
                         return GameState.TETRIS
         return False
 
+    # TODO gameover doesn't work
     def fall(self, time):
         """Piece will fall if enough time has passed."""
         time += self.clock.tick()
