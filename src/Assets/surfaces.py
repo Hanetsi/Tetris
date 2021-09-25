@@ -34,13 +34,13 @@ class TetrisSurface(Surface):
         """Draws the horizontal lines from the bottom up."""
         for y in range(int(self.get_height() / self.block_size) + 1):
             row = (y * self.block_size)
-            pygame.draw.line(self, self.line_color, (0, row), (self.get_width(), row), width=self.line_width)
+            pygame.draw.line(self, self.line_color, (0, row), (self.get_width(), row), width=int(self.line_width))
 
     def draw_vertical_lines(self) -> None:
         """Draws the vertical lines from the bottom up."""
         for x in range(int(self.get_width() / self.block_size) + 1):
             col = (x * self.block_size)
-            pygame.draw.line(self, self.line_color, (col, 0), (col, self.get_height()), width=self.line_width)
+            pygame.draw.line(self, self.line_color, (col, 0), (col, self.get_height()), width=int(self.line_width))
 
     def draw_grid(self, grid):
         """Draws all the blocks in grid. Accounts for line widths etc."""
@@ -73,3 +73,12 @@ class NextPieceSurface(Surface):
                     pygame.draw.rect(self, self.color, (x_pos, y_pos, height, width))
                 else:
                     pygame.draw.rect(self, color, (x_pos, y_pos, height, width))
+
+
+class ImageSurface(Surface):
+    def __init__(self, screen, color: tuple, size: tuple, pos: tuple, img):
+        super().__init__(screen, color, size, pos)
+        self.image = img
+
+    def draw(self):
+        self.screen.blit(self.image, self.area)

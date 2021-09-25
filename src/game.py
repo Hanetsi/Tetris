@@ -1,12 +1,12 @@
 import pygame
-from src.states import splash, tetris, gameover
+from src.states import splash, tetris, gameover, settings
 from src.Assets.gamestate import GameState
 
 pygame.init()
 
 # DEFAULT CONFIG
-WIDTH = 800
-HEIGHT = 800
+WIDTH = 1440
+HEIGHT = 1080
 VOLUME = 100
 
 
@@ -22,10 +22,10 @@ class Game:
         self.load_config()
         self.initialize()
 
-        self.splash = splash.Splash()
-        self.settings = splash.Splash()
+        self.splash = splash.Splash(self.screen)
+        self.settings = settings.Settings(self.screen)
         self.tetris = tetris.Tetris(self.screen)
-        self.gameover = gameover.Gameover()
+        self.gameover = gameover.Gameover(self.screen)
 
         self.game_loop()
 
@@ -85,17 +85,17 @@ class Game:
         running = True
         while running:
             if self.state == GameState.SPLASH:
-                self.splash = splash.Splash()
+                self.splash = splash.Splash(self.screen)
                 self.state = self.splash.loop()
             elif self.state == GameState.SETTINGS:
-                self.settings = splash.Splash()
+                self.settings = settings.Settings(self.screen)
                 self.state = self.settings.loop()
             elif self.state == GameState.TETRIS:
                 self.tetris = tetris.Tetris(self.screen)
                 self.state = self.tetris.loop()
             elif self.state == GameState.GAMEOVER:
-                self.gameover = gameover.Gameover()
+                self.gameover = gameover.Gameover(self.screen)
                 self.state = self.gameover.loop()
-            elif self.state == 0:
+            elif self.state == GameState.QUIT:
                 pygame.quit()
                 running = False

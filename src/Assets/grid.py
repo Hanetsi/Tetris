@@ -53,8 +53,7 @@ class Grid:
                 color_in_locked_pos = self.locked_grid[row + 1][col]
                 if color_in_locked_pos != self.bg_color:
                     if self.piece.y == 0:
-                        pass
-                        # self.game_over()
+                        return 0
                     return False
         return True
 

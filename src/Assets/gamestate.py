@@ -6,3 +6,4 @@ class GameState(Enum):
     SETTINGS = auto()
     TETRIS = auto()
     GAMEOVER = auto()
+    QUIT = auto()
