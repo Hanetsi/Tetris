@@ -2,7 +2,6 @@ import pygame
 from src.states import splash, tetris, gameover, settings
 from src.Assets.gamestate import GameState
 
-pygame.init()
 
 # DEFAULT CONFIG
 WIDTH = 1440
@@ -13,6 +12,7 @@ VOLUME = 100
 class Game:
     """Root class of the game."""
     def __init__(self, path):
+        pygame.init()
         self.path = path
         self.config = {
             "name": "hanezi",
@@ -45,7 +45,16 @@ class Game:
                 lines = [line.split("=") for line in lines]
                 lines = [[elem.strip("\n") for elem in line] for line in lines]
                 keys = [line[0] for line in lines]
-                values = [int(line[1]) if line[0] != "resolution" else tuple[line[1]] for line in lines]
+                values = []
+                for line in lines:
+                    if line[0] == "resolution":
+                        resolution = (line[1]).strip("()").split(", ")
+                        resolution = (int(resolution[0]), int(resolution[1]))
+                        values.append(resolution)
+                    elif line[0] == "name":
+                        values.append(str(line[1]))
+                    else:
+                        values.append(int(line[1]))
                 loaded = dict(zip(keys, values))
 
             for key in self.config.keys():
@@ -53,6 +62,7 @@ class Game:
                     with open(path, "a") as f:
                         line = key + "=" + str(self.config[key]) + "\n"
                         f.write(line)
+            self.config = loaded
             return True
 
         except FileNotFoundError as e:
@@ -61,10 +71,6 @@ class Game:
                 return True
             else:
                 return False
-
-        except Exception as e:
-            print("Error while loading config or creating config file", e)
-            return False
 
     def write_config(self) -> bool:
         """Write the current config to cfg file. When changing config within program, changed should first
@@ -91,6 +97,8 @@ class Game:
             elif self.state == GameState.SETTINGS:
                 self.settings = settings.Settings(self.screen, self.config)
                 self.state = self.settings.loop()
+                self.config = self.settings.get_config()
+                self.write_config()
             elif self.state == GameState.TETRIS:
                 self.tetris = tetris.Tetris(self.screen)
                 self.state = self.tetris.loop()
@@ -100,10 +108,14 @@ class Game:
             elif self.state == GameState.RESTART:
                 restart(self.path)
             elif self.state == GameState.QUIT:
-                pygame.quit()
+                print("QUITTING")
                 running = False
+                pygame.quit()
 
 
 def restart(path):
+    print("RESTARTING")
     Game(path)
+
+
 

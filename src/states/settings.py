@@ -14,7 +14,7 @@ class Settings:
         (1280, 960),
         (1440, 1080)
     ]
-    """Splash screen. Also the initial state."""
+    """Splash screen. Also the initial state. Gets the games config as parameter."""
     def __init__(self, screen, config):
         self.screen = screen
         self.config = config
@@ -31,17 +31,22 @@ class Settings:
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.4)),
             Text(self.screen, "Volume", self.text_color, self.text_size, (0, self.screen.get_height() * 0.5),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.6)),
+            Text(self.screen, "SAVE (ENTER)", self.text_color, self.text_size, (0, self.screen.get_height() * 0.8),
+                 (self.screen.get_width() * 0.5, self.screen.get_height() * 0.9)),
             Text(self.screen, "MENU (ESC)", self.text_color, self.text_size, (0, self.screen.get_height() * 0.9),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 1.0))
         ]
         self.options = [
             Option(self.screen, self.config["name"], self.text_color, self.text_size, (0, self.screen.get_height() * 0.2),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.3)),
-            Option(self.screen, str(self.config["resolution"]), self.text_color, self.text_size, (0, self.screen.get_height() * 0.4),
+            Option(self.screen, str(self.config["resolution"]).strip("()"), self.text_color, self.text_size, (0, self.screen.get_height() * 0.4),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.5)),
             Option(self.screen, str(self.config["volume"]), self.text_color, self.text_size, (0, self.screen.get_height() * 0.6),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.7))
         ]
+
+    def get_config(self):
+        return self.config
 
     def loop(self):
         while True:
@@ -59,6 +64,8 @@ class Settings:
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
                         return GameState.SPLASH
+                    if event.key == K_RETURN:
+                        return GameState.RESTART
                     if event.key == K_DOWN:
                         if self.selected < 2:
                             self.selected += 1
@@ -69,4 +76,52 @@ class Settings:
                             self.selected -= 1
                         else:
                             self.selected = 2
+                    if self.selected > 0:
+                        if event.key == K_RIGHT:
+                            key = self.static_texts[self.selected].get_text().lower()
+                            value = self.options[self.selected].get_option_value()
+                            if key == "resolution":
+                                value = value.split(", ")
+                                value = (int(value[0]), int(value[1]))
+                                index = self.resolutions.index(value)
+                                if index < len(self.resolutions) - 1:
+                                    self.config["resolution"] = self.resolutions[index + 1]
+                                    self.options[self.selected].update_text(str(self.config["resolution"]).strip("()"))
+                                else:
+                                    self.config["resolution"] = self.resolutions[0]
+                                    self.options[self.selected].update_text(str(self.config["resolution"]).strip("()"))
+                            elif key == "volume":
+                                value = int(value)
+                                if value < 100:
+                                    value += 10
+                                    self.config[key] = value
+                                    self.options[self.selected].update_text(str(self.config[key]))
+                                else:
+                                    value = 0
+                                    self.config[key] = value
+                                    self.options[self.selected].update_text(str(self.config[key]))
+
+                        if event.key == K_LEFT:
+                            key = self.static_texts[self.selected].get_text().lower()
+                            value = self.options[self.selected].get_option_value()
+                            if key == "resolution":
+                                value = value.split(", ")
+                                value = (int(value[0]), int(value[1]))
+                                index = self.resolutions.index(value)
+                                if index > 0:
+                                    self.config["resolution"] = self.resolutions[index - 1]
+                                    self.options[self.selected].update_text(str(self.config["resolution"]).strip("()"))
+                                else:
+                                    self.config["resolution"] = self.resolutions[-1]
+                                    self.options[self.selected].update_text(str(self.config["resolution"]).strip("()"))
+                            elif key == "volume":
+                                value = int(value)
+                                if value < 100:
+                                    value -= 10
+                                    self.config[key] = value
+                                    self.options[self.selected].update_text(str(self.config[key]))
+                                else:
+                                    value = 0
+                                    self.config[key] = value
+                                    self.options[self.selected].update_text(str(self.config[key]))
             pygame.display.flip()
