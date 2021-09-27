@@ -107,14 +107,13 @@ class Game:
                 self.state = self.gameover.loop()
             elif self.state == GameState.RESTART:
                 restart(self.path)
+                break
             elif self.state == GameState.QUIT:
-                print("QUITTING")
                 running = False
                 pygame.quit()
 
 
 def restart(path):
-    print("RESTARTING")
     Game(path)
 
 
