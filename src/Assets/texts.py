@@ -1,18 +1,15 @@
 import pygame
-from src.Assets.colors import *
 
 
 class Text:
-    pygame.font.init()
-    font = pygame.font.SysFont("Monotxt", 50)
-
-    def __init__(self, screen, text: str, color: tuple, size: int, topleft: tuple, downright: tuple):
+    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
         self.screen = screen
-        self.size = size
         self.text = text
         self.color = color
         self.topleft = topleft
         self.downright = downright
+        self.text_size = int(self.screen.get_height() * 0.05)
+        self.font = pygame.font.SysFont("Monotxt", self.text_size)
         # Initial value for x and y
         self.x, y = self.topleft[0], self.topleft[1]
         self.surface = self.font.render(text, False, self.color)
@@ -33,8 +30,8 @@ class Text:
 
 
 class Score(Text):
-    def __init__(self, screen, text: str, color: tuple, size: int, topleft: tuple, downright: tuple):
-        super().__init__(screen, text, color, size, topleft, downright)
+    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
+        super().__init__(screen, text, color, topleft, downright)
 
     def draw(self, score):
         """Override the draw method to allow displaying different scores."""
@@ -44,9 +41,9 @@ class Score(Text):
 
 
 class Option(Text):
-    def __init__(self, screen, text: str, color: tuple, size: int, topleft: tuple, downright: tuple):
+    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
         self.text = "< " + text + " >"
-        super().__init__(screen, self.text, color, size, topleft, downright)
+        super().__init__(screen, self.text, color, topleft, downright)
 
     def draw(self):
         """Draws the text onto screen with normal color"""
@@ -66,3 +63,12 @@ class Option(Text):
 
     def get_option_value(self):
         return self.text.strip("< >")
+
+
+class Title(Text):
+    def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
+        super().__init__(screen, text, color, topleft, downright)
+        self.text_size = int(self.screen.get_height() * 0.08)
+        self.font = pygame.font.SysFont("Monotxt", self.text_size)
+        self.surface = self.font.render(text, False, self.color)
+        self.center()

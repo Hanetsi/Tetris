@@ -25,23 +25,23 @@ class Settings:
         self.surface = ImageSurface(self.screen, DARK_GRAY, self.screen.get_size(), (0, 0), self.bg_img)
         self.selected = 0
         self.static_texts = [
-            Text(self.screen, "Name", self.text_color, self.text_size, (0, self.screen.get_height() * 0.1),
+            Text(self.screen, "Name", self.text_color, (0, self.screen.get_height() * 0.1),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.2)),
-            Text(self.screen, "Resolution", self.text_color, self.text_size, (0, self.screen.get_height() * 0.3),
+            Text(self.screen, "Resolution", self.text_color, (0, self.screen.get_height() * 0.3),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.4)),
-            Text(self.screen, "Volume", self.text_color, self.text_size, (0, self.screen.get_height() * 0.5),
+            Text(self.screen, "Volume", self.text_color, (0, self.screen.get_height() * 0.5),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.6)),
-            Text(self.screen, "SAVE (ENTER)", self.text_color, self.text_size, (0, self.screen.get_height() * 0.8),
+            Text(self.screen, "SAVE (ENTER)", self.text_color, (0, self.screen.get_height() * 0.8),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.9)),
-            Text(self.screen, "MENU (ESC)", self.text_color, self.text_size, (0, self.screen.get_height() * 0.9),
+            Text(self.screen, "MENU (ESC)", self.text_color, (0, self.screen.get_height() * 0.9),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 1.0))
         ]
         self.options = [
-            Option(self.screen, self.config["name"], self.text_color, self.text_size, (0, self.screen.get_height() * 0.2),
+            Option(self.screen, self.config["name"], self.text_color, (0, self.screen.get_height() * 0.2),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.3)),
-            Option(self.screen, str(self.config["resolution"]).strip("()"), self.text_color, self.text_size, (0, self.screen.get_height() * 0.4),
+            Option(self.screen, str(self.config["resolution"]).strip("()"), self.text_color, (0, self.screen.get_height() * 0.4),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.5)),
-            Option(self.screen, str(self.config["volume"]), self.text_color, self.text_size, (0, self.screen.get_height() * 0.6),
+            Option(self.screen, str(self.config["volume"]), self.text_color, (0, self.screen.get_height() * 0.6),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.7))
         ]
 

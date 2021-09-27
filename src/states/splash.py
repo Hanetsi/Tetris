@@ -3,24 +3,23 @@ from pygame.locals import *
 from src.Assets.gamestate import GameState
 from src.Assets.surfaces import Surface, ImageSurface
 from src.Assets.colors import *
-from src.Assets.texts import Text
+from src.Assets.texts import Text, Title
 
 
 class Splash:
     """Splash screen. Also the initial state."""
     def __init__(self, screen):
         self.screen = screen
-        self.text_size = self.screen.get_width() / 10
         self.text_color = PURPLE
         # A bit rough
         self.static_texts = [
-            Text(self.screen, "TETRIS", self.text_color, self.text_size*2, (0, 0),
+            Title(self.screen, "TETRIS", self.text_color, (0, 0),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.2)),
-            Text(self.screen, "PLAY (space)", self.text_color, self.text_size, (0, self.screen.get_height() * 0.35),
+            Text(self.screen, "PLAY (space)", self.text_color, (0, self.screen.get_height() * 0.35),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.45)),
-            Text(self.screen, "OPTIONS (F1)", self.text_color, self.text_size, (0, self.screen.get_height() * 0.45),
+            Text(self.screen, "OPTIONS (F1)", self.text_color, (0, self.screen.get_height() * 0.45),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.55)),
-            Text(self.screen, "QUIT (ESC)", self.text_color, self.text_size, (0, self.screen.get_height() * 0.55),
+            Text(self.screen, "QUIT (ESC)", self.text_color, (0, self.screen.get_height() * 0.55),
                  (self.screen.get_width() * 0.5, self.screen.get_height() * 0.65))
         ]
         self.bg_img = pygame.image.load("src/Assets/splash.png").convert()

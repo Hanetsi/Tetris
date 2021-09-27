@@ -13,6 +13,7 @@ class Game:
     """Root class of the game."""
     def __init__(self, path):
         pygame.init()
+        pygame.font.init()
         self.path = path
         self.config = {
             "name": "hanezi",

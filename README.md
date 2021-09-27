@@ -4,9 +4,6 @@
 
 ### "ASAP":
 
-make text size scale with resolution maybe 10% of width?
-
-after a restart, quitting causes another restart and a crash
 
 make game over work again.
 
