@@ -1,5 +1,11 @@
 # TETRIS project
 
+## Dependencies:
+
+pygame
+
+sqlite3(in the future with hiscores)
+
 ## TODO:
 
 ### "ASAP":
@@ -25,3 +31,5 @@ sounds
 more refactoring?
 
 WASD + arrows keys
+
+maybe a timer?
