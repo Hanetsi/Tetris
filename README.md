@@ -4,10 +4,11 @@
 
 ### "ASAP":
 
-
 make game over work again.
 
 ### LATER:
+
+rework text, to instead give topleft and downright as percentages of screen?
 
 fix bug with rotations displacing blocks by 1 to the left
 
@@ -22,3 +23,5 @@ music
 sounds
 
 more refactoring?
+
+WASD + arrows keys

@@ -10,8 +10,6 @@ try:
 except ModuleNotFoundError:
     from src.Assets.colors import *
 
-pygame.init()
-
 
 class Tetris:
     play_bg_color = DARK_GRAY
@@ -22,6 +20,7 @@ class Tetris:
     fall_time = 500
 
     def __init__(self, screen):
+        pygame.init()
         self.game_running = False
         self.screen = screen
         self.x, self.y = self.screen.get_rect()[0], self.screen.get_rect()[1]
@@ -83,10 +82,14 @@ class Tetris:
         self.clock = pygame.time.Clock()
         self.score = 0
         self.game_running = True
+        self.game_over = False
 
-    def game_over(self):
-        self.game_running = False
-        self.game_over_text.draw()
+    def check_game_over(self):
+        if self.grid.piece.y == 0:
+            self.game_over = True
+
+    def get_score(self):
+        return self.score
 
     def draw_surfaces(self):
         """Draws all the backgrounds."""
@@ -117,6 +120,8 @@ class Tetris:
                         while self.grid.check_down():
                             self.grid.piece.move_down()
                         else:
+                            if self.check_game_over():
+                                return
                             self.grid.lock_piece()
                             self.grid.piece = self.next_grid.piece
                             self.next_grid.next_piece()
@@ -136,6 +141,8 @@ class Tetris:
                 self.grid.piece.move_down()
                 time = 0
             else:
+                if self.check_game_over():
+                    return
                 self.grid.lock_piece()
                 self.grid.piece = self.next_grid.piece
                 self.next_grid.next_piece()
@@ -155,7 +162,8 @@ class Tetris:
                 state_change = self.handle_events()
                 if state_change:
                     return state_change
-
+                if self.game_over:
+                    return GameState.GAMEOVER
                 time = self.fall(time)
                 self.grid.clean_grid()
                 self.grid.piece_to_grid()

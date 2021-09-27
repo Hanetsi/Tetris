@@ -103,8 +103,9 @@ class Game:
             elif self.state == GameState.TETRIS:
                 self.tetris = tetris.Tetris(self.screen)
                 self.state = self.tetris.loop()
+                self.score = self.tetris.get_score()
             elif self.state == GameState.GAMEOVER:
-                self.gameover = gameover.Gameover(self.screen)
+                self.gameover = gameover.Gameover(self.screen, score=self.score)
                 self.state = self.gameover.loop()
             elif self.state == GameState.RESTART:
                 restart(self.path)

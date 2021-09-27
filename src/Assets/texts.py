@@ -1,6 +1,11 @@
 import pygame
 
 
+def invert_color(color: tuple) -> tuple:
+    inverted_colors = [255-value for value in color]
+    return tuple(inverted_colors)
+
+
 class Text:
     def __init__(self, screen, text: str, color: tuple, topleft: tuple, downright: tuple):
         self.screen = screen
@@ -53,8 +58,8 @@ class Option(Text):
 
     def draw_as_selected(self):
         """Draws the text onto screen with inverted color"""
-        inverted_r, inverted_g, inverted_b = 255 - self.color[0], 255 - self.color[1], 255 - self.color[2]
-        self.surface = self.font.render(self.text, False, (inverted_r, inverted_g, inverted_b))
+        inverted_color = invert_color(self.color)
+        self.surface = self.font.render(self.text, False, inverted_color)
         self.center()
         self.screen.blit(self.surface, (self.x, self.y))
 
