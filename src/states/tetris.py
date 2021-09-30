@@ -20,7 +20,6 @@ class Tetris:
     fall_time = 500
 
     def __init__(self, screen):
-        pygame.init()
         self.game_running = False
         self.screen = screen
         self.x, self.y = self.screen.get_rect()[0], self.screen.get_rect()[1]
@@ -38,17 +37,7 @@ class Tetris:
         }
         self.rows = int(self.dimensions["play_height"] / self.dimensions["block_size"])
         self.cols = int((self.dimensions["play_width"] / self.dimensions["block_size"]))
-        self.surfaces = [
-            Surface(self.screen, self.bg_color, (self.width, self.height),
-                    (self.x, self.y)),
-            TetrisSurface(self.screen, self.play_bg_color, self.line_color,
-                          (self.dimensions["play_width"], self.dimensions["play_height"]),
-                            (self.dimensions["play_left"], self.dimensions["play_top"]),
-                                    self.line_width, self.dimensions["block_size"]),
-            NextPieceSurface(self.screen, self.bg_color, (self.dimensions["play_left"], 200),
-                             (0, self.dimensions["play_top"]),
-                             self.line_width, self.dimensions["block_size"])
-        ]
+        self.surfaces = self.create_surfaces()
         self.grid = Grid(bg_color=self.play_bg_color, rows=self.rows, cols=self.cols)
         self.next_grid = NextPieceGrid(bg_color=self.bg_color, rows=5, cols=5)
 
@@ -59,18 +48,7 @@ class Tetris:
 
         self.text_color = PURPLE
         self.text_size = self.width/10
-        self.static_texts = [
-            Title(self.screen, "TETRIS", self.text_color,
-                 (self.dimensions["play_left"], 0), (self.dimensions["play_left"] + self.dimensions["play_width"], self.dimensions["play_top"])),
-            Text(self.screen, "Score", self.text_color, (self.dimensions["info_left"], self.dimensions["play_top"]),
-                 (self.width, self.dimensions["play_top"] + 100)),
-            Text(self.screen, "MENU (ESC)", self.text_color,
-                 (0, self.width * 0.7),
-                 (self.dimensions["play_left"], self.height)),
-            Text(self.screen, "RESTART (R)", self.text_color,
-                 (self.dimensions["info_left"], self.width * 0.7),
-                 (self.width, self.height))
-        ]
+        self.static_texts = self.create_static_texts()
         self.game_over_text = Text(self.screen, "GAME OVER", self.text_color,
                                    (self.dimensions["play_left"], self.dimensions["play_top"] - 100),
                                    (self.dimensions["info_left"], self.dimensions["play_top"]))
@@ -83,6 +61,36 @@ class Tetris:
         self.score = 0
         self.game_running = True
         self.game_over = False
+
+    def create_surfaces(self):
+        surfaces = [
+            Surface(self.screen, self.bg_color, (self.width, self.height),
+                    (self.x, self.y)),
+            TetrisSurface(self.screen, self.play_bg_color, self.line_color,
+                          (self.dimensions["play_width"], self.dimensions["play_height"]),
+                          (self.dimensions["play_left"], self.dimensions["play_top"]),
+                          self.line_width, self.dimensions["block_size"]),
+            NextPieceSurface(self.screen, self.bg_color, (self.dimensions["play_left"], 200),
+                             (0, self.dimensions["play_top"]),
+                             self.line_width, self.dimensions["block_size"])
+        ]
+        return surfaces
+
+    def create_static_texts(self):
+        text = [
+            Title(self.screen, "TETRIS", self.text_color,
+                  (self.dimensions["play_left"], 0),
+                  (self.dimensions["play_left"] + self.dimensions["play_width"], self.dimensions["play_top"])),
+            Text(self.screen, "Score", self.text_color, (self.dimensions["info_left"], self.dimensions["play_top"]),
+                 (self.width, self.dimensions["play_top"] + 100)),
+            Text(self.screen, "MENU (ESC)", self.text_color,
+                 (0, self.width * 0.7),
+                 (self.dimensions["play_left"], self.height)),
+            Text(self.screen, "RESTART (R)", self.text_color,
+                 (self.dimensions["info_left"], self.width * 0.7),
+                 (self.width, self.height))
+        ]
+        return text
 
     def check_game_over(self):
         if self.grid.piece.y == 0:

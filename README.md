@@ -10,7 +10,7 @@ sqlite3(in the future with hiscores)
 
 ### "ASAP":
 
-make game over work again.
+Refactor surfaces and text to subclasses to declutter tetris.
 
 ### LATER:
 
