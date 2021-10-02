@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from src.Assets.gamestate import GameState
-from src.Assets.surfaces import Surface, ImageSurface
+from src.Assets.surfaces import Surface, ImageBackgroundSurface
 from src.Assets.colors import *
 from src.Assets.texts import Text, Title
 
@@ -24,7 +24,7 @@ class Splash:
         ]
         self.bg_img = pygame.image.load("src/Assets/splash.png").convert()
         self.bg_img = pygame.transform.scale(self.bg_img, self.screen.get_size())
-        self.surface = ImageSurface(self.screen, DARK_GRAY, self.screen.get_size(), (0, 0), self.bg_img)
+        self.surface = ImageBackgroundSurface(self.screen, self.bg_img)
 
     def loop(self):
         while True:

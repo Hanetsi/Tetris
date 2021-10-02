@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from src.Assets.gamestate import GameState
-from src.Assets.surfaces import Surface, ImageSurface
+from src.Assets.surfaces import Surface, ImageBackgroundSurface
 from src.Assets.colors import *
 from src.Assets.texts import Text, Option
 
@@ -22,7 +22,7 @@ class Settings:
         self.text_color = PURPLE
         self.bg_img = pygame.image.load("src/Assets/splash.png").convert()
         self.bg_img = pygame.transform.scale(self.bg_img, self.screen.get_size())
-        self.surface = ImageSurface(self.screen, DARK_GRAY, self.screen.get_size(), (0, 0), self.bg_img)
+        self.surface = ImageBackgroundSurface(self.screen, self.bg_img)
         self.selected = 0
         self.static_texts = [
             Text(self.screen, "Name", self.text_color, (0, self.screen.get_height() * 0.1),
@@ -116,12 +116,12 @@ class Settings:
                                     self.options[self.selected].update_text(str(self.config["resolution"]).strip("()"))
                             elif key == "volume":
                                 value = int(value)
-                                if value < 100:
+                                if value > 0:
                                     value -= 10
                                     self.config[key] = value
                                     self.options[self.selected].update_text(str(self.config[key]))
                                 else:
-                                    value = 0
+                                    value = 100
                                     self.config[key] = value
                                     self.options[self.selected].update_text(str(self.config[key]))
             pygame.display.flip()

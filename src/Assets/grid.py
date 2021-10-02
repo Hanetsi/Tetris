@@ -11,10 +11,10 @@ def empty_grid(color: tuple, rows: int, cols: int):
 
 
 class Grid:
-    def __init__(self, bg_color, rows, cols):
+    def __init__(self, bg_color, rows: int = 20, cols: int = 10):
         self.bg_color = bg_color
-        self.rows = int(rows)
-        self.cols = int(cols)
+        self.rows = rows
+        self.cols = cols
         self.grid = empty_grid(self.bg_color, self.rows, self.cols)
         self.locked_grid = empty_grid(self.bg_color, self.rows, self.cols)
         self.piece = random_piece()
@@ -111,8 +111,10 @@ class Grid:
 
 class NextPieceGrid(Grid):
     """Inheriting from Grid is not optimal, but will do."""
-    def __init__(self, bg_color, rows, cols):
-        super().__init__(bg_color, rows, cols)
+    def __init__(self, bg_color):
+        self.rows = 5
+        self.cols = 5
+        super().__init__(bg_color, self.rows, self.cols)
         self.piece = random_piece()
 
     def next_piece(self):
